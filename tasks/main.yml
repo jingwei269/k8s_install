@@ -96,7 +96,7 @@
 - name: update pause_image seting
   lineinfile:
     path: /etc/crio/crio.conf
-    regexp: '^# pause_image.*'
+    regexp: '^# pause_image'
     line: "{{ pause_image }}"
 
 - name: keyPaths Fix
