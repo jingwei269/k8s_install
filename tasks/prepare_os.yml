@@ -1,0 +1,34 @@
+---
+- name: Create backup repos directory
+   file:
+     path: "{{ repo_bakdir }}"
+     state: directory
+
+- name: move old repos to backup directory
+  shell: "mv /etc/yum.repos.d/*.repo  {{ repo_bakdir }}"
+  ignore_errors: true
+
+- name: Install aliyun repos
+  copy:
+    src:  "{{ centos_repo }}"
+    dest: "{{ dest_centos_repo }}"
+
+- name: Remove epel_repo incase if installed
+  yum:
+   name: epel-release
+   state: absent
+  ignore_errors: true ### in case if not installed
+
+- name: Install epel_repo
+  yum:
+   name: epel-release
+   state: latest
+
+- name: modify epel_repos
+  shell: "yum repolist |grep aliyum ||sed -i.bak  -e 's|^metalink|#metalink|'  -e 's|^#baseurl=|baseurl=|'  -e 's|download.example/pub|mirrors.aliyun.com|' /etc/yum.repos.d/epel*.repo"
+
+- name: update OS
+  yum:
+   name: '*'
+   state: latest
+  notify: reboot os

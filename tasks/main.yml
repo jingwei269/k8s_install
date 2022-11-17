@@ -1,0 +1,76 @@
+---
+- name: load modulers
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ req_modulers }}"
+
+- name: modify kernel parameters
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    sysctl_file: "{{ sysctl_file }}"
+    sysctl_set: yes
+  loop: "{{ k8s_kernels }}"
+   
+
+- name: stop firewall and disable
+  service:
+    name: "{{firewall_svc }}"
+    state: stopped
+    enabled: no
+
+- name: modify selinux policy
+  selinux:
+    policy: "{{ selinux_policy }}"
+    state: "{{ selinux_state }}"
+
+- name: disable swap
+  shell: "sed -i.bk 's/^[^#].*swap.*/#&/g' /etc/fstab ; swapoff -a "
+
+- name: set timezone to Asia/Shanghai
+  timezone:
+     name: "{{ tzone }}"
+
+- name: add kube tools repos
+  yum_repository:
+      name: kubernets
+      description: kubernets
+      baseurl: "{{ kube_baseurl }}"
+      gpgcheck: no
+      file: kubernets
+
+- name: install kubenetes
+  yum:
+      name: "{{ kube_pkg }}"
+      state: latest
+
+- name: prepare crio repos
+  copy:
+      src: "{{ crio_src }}"
+      dest: "{{ /etc/yum.repos.d/crio_1.24.repo }}"
+
+
+- name: install crio
+  yum:
+      name: crio
+      state: latest
+
+- name: update pause_image seting
+  lineinfile:
+    path: /etc/crio/crio.conf
+    regexp: '^# pause_image.*'
+    line: "{{ pause_image }}"
+
+- name: keyPaths Fix
+  lineinfile:
+    path: /etc/containers/policy.json
+    regexp: '^.*keyPaths.*'
+    line: '                    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"'
+
+- name: start & enable crio & kubelet
+  service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+  loop: "{{ svc }}"
