@@ -62,7 +62,7 @@
 
 - name: disable swap
   shell: "sed -i.bk 's/^[^#].*swap.*/#&/g' /etc/fstab ; swapoff -a "
-  warn: false
+  ignore_errors: true
 
 
 - name: set timezone to Asia/Shanghai
