@@ -1,3 +1,4 @@
+'''
 通过ansible在CentOS Stream 8 上面安装和配置k8s所需的包和参数等。
 前提条件
 1. 在ansible控制节点安装ansible version > 2.4 ##测试版本2.13.5
@@ -80,3 +81,4 @@ token 根据实际情况修改：
                                  Dload  Upload   Total   Spent    Left  Speed
 100  229k  100  229k    0     0   335k      0 --:--:-- --:--:-- --:--:--  334k
 [root@master1 ~]# kubectl apply -f calico.yaml
+'''
