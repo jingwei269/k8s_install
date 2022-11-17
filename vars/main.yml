@@ -5,7 +5,7 @@ dest_centos_repo: "{{ dest_repo_dir }}/CentOS-Base.repo"
 repo_bakdir: /etc/yum.repos.d/repobak
 
 ##yum_repository
-kube_baseurl: https://mirrors.aliyun.com/kubernetes/yum.repos/kubernetes-el7-x86_64
+kube_baseurl: https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
 kube_version: 1.24.1
 crio_version: 1.24
 
