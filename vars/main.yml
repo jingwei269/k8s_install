@@ -19,8 +19,8 @@ req_modulers:
  - overlay
  - br_netfilter
 
- mod_src: files/kubernetes.conf
- mod_dest: /etc/modules-load.d/kubernetes.conf
+mod_src: files/kubernetes.conf
+mod_dest: /etc/modules-load.d/kubernetes.conf
 
 k8s_kernels:
  - net.bridge.bridge-nf-call-iptables
