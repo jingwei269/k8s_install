@@ -34,6 +34,11 @@
    state: latest
   notify: reboot os
 
+- name: add modulers file
+  copy: 
+    src: "{{ mod_src }}"
+    dest: "{{ mod_dest }}"
+
 - name: load modulers
   modprobe:
     name: "{{ item }}"
