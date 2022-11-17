@@ -85,7 +85,7 @@
 - name: prepare crio repos
   copy:
       src: "{{ crio_src }}"
-      dest: "{{ /etc/yum.repos.d/crio_1.24.repo }}"
+      dest: "{{ crio_dest }}"
 
 
 - name: install crio
