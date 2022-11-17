@@ -1,0 +1,94 @@
+---
+- name: Modify kernel parameter and install kube* tools
+  hosts: newserver
+  vars: 
+    kube_pkg:
+    - kubelet-1.24.1
+    - kubeadm-1.24.1
+    - kubectl-1.24.1
+    svc: 
+      - crio
+      - kubelet
+  
+  tasks:
+    - name: load modulers
+      modprobe:
+        name: "{{ item }}"
+        state: present
+      loop: 
+         - overlay
+         - br_netfilter 
+    
+    - name: modify kernel parameters
+      sysctl: 
+        name: "{{ item }}"
+        value: '1'
+        sysctl_file: /etc/sysctl.d/kubernetes.conf
+        sysctl_set: yes 
+      loop:
+        - net.bridge.bridge-nf-call-iptables
+        - net.bridge.bridge-nf-call-ip6tables
+        - net.ipv4.ip_forward  
+  
+    - name: stop firewall and disable
+      service: 
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: modify selinux policy 
+      selinux:
+        policy: targeted
+        state: permissive
+
+    - name: disable swap 
+      shell: "sed -i.bk 's/^[^#].*swap.*/#&/g' /etc/fstab ; swapoff -a "
+
+    - name: set timezone to Asia/Shanghai
+      timezone: 
+         name: Asia/Shanghai
+
+    - name: add kube tools repos
+      yum_repository: 
+          name: kubernets
+          description: kubernets 
+          baseurl: https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+          gpgcheck: no
+          file: kubernets
+
+    - name: install kubenetes
+      yum: 
+          name: "{{ kube_pkg }}"    
+          state: latest
+
+    - name: prepare crio repos
+      copy: 
+          src: files/crio_1.24.repo
+          dest: /etc/yum.repos.d/crio_1.24.repo
+
+
+    - name: install crio
+      yum: 
+          name: crio
+          state: latest
+
+    - name: update pause_image seting 
+      lineinfile:
+        path: /etc/crio/crio.conf
+        regexp: '^# pause_image.*'
+        line: 'pause_image = "k8s.gcr.io/pause:3.7"'         
+
+    - name: keyPaths Fix
+      lineinfile:
+        path: /etc/containers/policy.json
+        regexp: '^.*keyPaths.*'
+        line: '                    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"'
+
+    - name: start & enable crio & kubelet
+      service: 
+          name: "{{ item }}"
+          state: started
+          enabled: yes
+      loop: "{{ svc }}"
+
+ 

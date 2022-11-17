@@ -1,0 +1,15 @@
+
+## copy
+centos_repo: files/CentOS-Base.repo
+dest_repo_dir: /etc/yum.repos.d
+dest_centos_repo: "{{ dest_repo_dir }}/CentOS-Base.repo"
+repo_bakdir: /etc/yum.repos.d/repobak
+
+##yum_repository
+kube_baseurl: https://mirrors.aliyum.com/kubernetes/yum.repos/kubernetes-el7-x86_64
+kube_version: 1.24.1
+crio_version: 1.24
+os_version: CentOS_8
+
+## get_url
+crio_repo: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:"{{ crio_version }}"/"{{ os_version }}"/devel:kubic:libcontainers:stable:cri-o:"{{ crio_version }}".repo

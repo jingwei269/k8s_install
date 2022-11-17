@@ -1,0 +1,9 @@
+[master]
+master1
+
+[worker]
+worker1
+worker2
+
+[newserver]
+worker3
