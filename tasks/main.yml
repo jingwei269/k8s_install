@@ -1,7 +1,7 @@
 ---
 
 - name: Create backup repos directory
-   file:
+  file:
      path: "{{ repo_bakdir }}"
      state: directory
 
