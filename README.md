@@ -76,9 +76,10 @@ token 根据实际情况修改：
 [root@ansible n_k8s_install]# ssh devops@worker3 "sudo kubeadm join 192.168.31.22:6443 --token karad7.e2uopy5132ackb96 --discovery-token-ca-cert-hash sha256:b1ab5001fe3569076a7285f4f14bff5d1b0f9b35f5071608af49f42c403cf8ca "
 
 安装calico
-[root@master1 ~]# curl https://docs.projectcalico.org/manifests/calico.yaml | sed  -e '/192/s/# //g' -e '/IPV4POOL_CIDR/s/# //g' -e '/192/s/192\.168/10\.244/g' > calico.yaml
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100  229k  100  229k    0     0   335k      0 --:--:-- --:--:-- --:--:--  334k
+## 安装calico
+kubectl create -f https://docs.projectcalico.org/archive/v3.20/manifests/tigera-operator.yaml
+
+curl   https://docs.projectcalico.org/archive/v3.20/manifests/custom-resources.yaml | sed  -e '/192/s/# //g' -e '/IPV4POOL_CIDR/s/# //g' -e '/192/s/192\.168/10\.244/g' > calico.yaml
+
 [root@master1 ~]# kubectl apply -f calico.yaml
 ```
